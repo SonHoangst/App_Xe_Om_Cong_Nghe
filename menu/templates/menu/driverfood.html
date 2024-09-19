@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'menu/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'menu/fonts/themify-icons-font/themify-icons/themify-icons.css' %}">  
+</head>
+<body>
+    <div id="main">
+        <div id="header">
+            <ul class="menu">
+                <li>
+                    <i class="ti-menu" onclick="toggleSubMenu()"></i>
+                    <p>Menu</p>
+                </li>
+            </ul>
+            <a href="#"><img class="logo" src="{% static 'menu/img/logo/logograb.png' %}" alt="logograb"></a>
+            <div class="info">
+                    <ul>
+                        <li><a href="#" onclick="openModalInfo()">Thông tin</a></li>
+                        <li><a href="{% url 'login:dangxuat' %}">Đăng xuất</a></li>
+                    </ul>
+                </i>
+            </div>
+        </div>
+        
+        <div class="submenu" style="display: none;">
+            <ul class="object">
+                <li>Người dùng</li>
+                <li>Tài xế</li>
+                <li>Thương nhân</li>
+            </ul>
+            <div id="choose-user" class="choose">
+                <div>
+                    <li><a href="#">Di chuyển</a></li>
+                    <p>Tất tần tật về các dịch vụ phục vụ nhu cầu đi lại của bạn</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabFood</a></li>
+                    <p>Thưởng thức món ngon ngay tại nhà</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabExpress</a></li>
+                    <p>Dịch vụ giao hàng nhanh chóng và tiện lợi</p>
+                </div>
+            </div>
+            <div id="choose-driver" class="choose" style="display: none;">
+                <div>
+                    <li><a href="{% url 'menu:drivermove' %}">Di chuyển</a></li>
+                    <p>Làm chủ tài chính và thời gian.</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabFood</a></li>
+                    <p>Kiếm thêm thu nhập với dịch vụ giao thức ăn.</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabExpress</a></li>
+                    <p>Kiếm nhiều hơn nữa với dịch vụ giao hàng.</p>
+                </div>
+            </div>
+            <div id="choose-vendor" class="choose" style="display: none;">
+                <div>
+                    <li><a href="#">GrabFood</a></li>
+                    <p>Tăng doanh thu khi mở quán ăn trên Grab và tiếp cận hàng triệu người dùng</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabMart</a></li>
+                    <p>Phát triển doanh nghiệp của bạn bằng cách đưa hàng hóa đến tận tay người tiêu dùng</p>
+                </div>
+            </div>
+        </div>        
+
+        <div id="content">
+            <div class="slider">
+                <video autoplay loop class="video">
+                    <source src="{% static 'menu/video/slide-video.webm' %}" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div id="tuyChon">
+                <div style=" display: flex; align-items: center; flex-direction: row;  ">
+                    <button type="button" style="background: #009688; padding: 10px 20px; margin:10px 10px ;border-radius: 20px;"  onclick="xemNhanDon()">Nhận đơn</button>
+                    <button type="button" style="background: #009688;padding: 10px 20px; margin:10px 10px ;border-radius: 20px;" onclick="xemlistdonhang()">Xem đơn hàng</button>
+                    <button type="button" style="background: #009688;padding: 10px 20px; border-radius: 20px;" onclick="xemDonHangDangNhan()">Đơn hàng đang nhận</button>
+                </div>
+                <h3 id="textNhanXeError"></h3>
+            </div>
+            
+            <div class="location" id="location">
+                <h2>ĐỊA CHỈ CỦA BẠN</h2>
+                <form id="locationForm" >
+                    {% comment %} {% csrf_token %}
+                    <input type="hidden" name="action" value="getDonHang"> {% endcomment %}
+                    <label for="driver_location">Địa chỉ:</label>
+                    <input type="text" id="driver_location" name="driver_location" style="width: 70%;">
+                    <input type="text" id="driver_location_hide" name="driver_location_hide" style="display: none;">
+                    <div id="driver_suggestions" style="display: none;"></div>
+                    <br>
+                        <button type="button" onclick="searchLocation('driver')">Tìm địa chỉ</button>
+                    <br>
+                    <button type="button" id="viewDetail" onclick="showGetDonHangCoTheNhan()">Xác nhận</button>
+                </form>
+                <div id="mapid" style="height: 600px; width:100%; z-index: 40;"></div>
+    
+            </div>
+    
+            
+            {%if donhangcothenhan%}
+            <div id="donHangValid" style="display: none;">
+                <h2>Đơn hàng có thể nhận</h2>
+                <table >
+                    <thead >
+                        <tr >
+                            <th style="padding: 10px;border: 2px solid #ddd;">Người dùng</th>
+                            <th style=" width:30%;padding: 10px;border: 2px solid #ddd;">Điểm giao</th>
+                            <th style=" width:30%;padding: 10px;border: 2px solid #ddd;">Phi</th>
+                            <th style="padding: 10px;border: 2px solid #ddd;">Giá Tiền</th>
+                            <th style="padding: 10px;border: 2px solid #ddd;">Tùy chọn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donhangdichuyen in donhangcothenhan %} 
+                        <tr id="{{ donhangdichuyen.doan.quanan.lat }},{{ donhangdichuyen.doan.quanan.var }}">
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.nguoi_dung.username }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.diem_giao }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.diem_den }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.giaTien }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">
+                                <div class="modalNhanDon" >
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="nhandon" style="display: none">
+                                        <input type="text" id="diachitaixe" name="diachitaixe"  style="display: none;">
+                                        <input type="text" id="diachitaixehide" name="diachitaixehide" style="display: none;">
+                                        <input type="text" class="modal-input" name="username" value="{{ username }}" style="display: none">
+                                        <input type="text" class="modal-input" name="idDonHang" style="display: none" value="{{ donhangdichuyen.id }}">
+                                        <button type="submit" id="btnhandon">Nhận đơn</button>
+                                    </form>
+                                </div>
+                               </td>
+                        </tr>
+                        {% endfor %}
+    
+                    </tbody>
+                </table>
+            </div>  
+            {%endif%}
+    
+            <div id="viewListDonHang" style="display: none;">
+                <h2>Đơn hàng của bạn</h2>
+                <table >
+                    <thead >
+                        <tr >
+                            <th style="padding: 10px;border: 2px solid #ddd;">Người dùng</th>
+                            <th style=" width:30%;padding: 10px;border: 2px solid #ddd;">Điểm đón</th>
+                            <th style=" width:30%;padding: 10px;border: 2px solid #ddd;">Điểm đến</th>
+                            <th style="padding: 10px;border: 2px solid #ddd;">Giá Tiền</th>
+                            <th style="padding: 10px;border: 2px solid #ddd;">Hoa hồng</th>
+                            <th style="padding: 10px;border: 2px solid #ddd;">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donhangdichuyen in donhangcuaban %} 
+                        <tr id="{{ donhangdichuyen.diem_don_lat }},{{ donhangdichuyen.diem_don_var }}">
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.nguoi_dung }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.diem_don }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.diem_den }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.giaTien }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.hoaHong }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.get_tinhtrang_display }}</td>
+                            <td class="location" data-tinhtrang="{{ donhangdichuyen.tinhtrang }}" style="display:none;">
+                        </tr>
+                        {% endfor %}
+    
+                    </tbody>
+                </table>
+            </div> 
+    
+            <div id="viewDonHangDangNhan" style="display: none;">
+                <h2>Đơn hàng đang nhận</h2>
+                <table >
+                    <thead >
+                        <tr >
+                            <th style="padding: 10px;border: 2px solid #ddd;">Người dùng</th>
+                            <th style=" width:30%;padding: 10px;border: 2px solid #ddd;">Điểm đón</th>
+                            <th style=" width:30%;padding: 10px;border: 2px solid #ddd;">Điểm đến</th>
+                            <th style="padding: 10px;border: 2px solid #ddd;">Giá Tiền</th>
+                            <th style="padding: 10px;border: 2px solid #ddd;">Hoa hồng</th>
+                            <th style="padding: 10px;border: 2px solid #ddd;">Trạng thái</th>
+                            <th style="padding: 10px;border: 2px solid #ddd;">Tùy chọn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donhangdichuyen in donhangdangnhan %} 
+                        <tr id="{{ donhangdichuyen.diem_don_lat }},{{ donhangdichuyen.diem_don_var }}">
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.nguoi_dung }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.diem_don }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.diem_den }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.giaTien }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.hoaHong }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">{{ donhangdichuyen.get_tinhtrang_display }}</td>
+                            <td style="padding: 10px;border: 2px solid #ddd;">
+                                <form  method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="chuyenTrangThaiDonHang" style="display: none">
+                                    <input type="text" class="modal-input" name="idDonHang" style="display: none" value="{{ donhangdichuyen.id }}">
+                                    {% if donhangdichuyen.tinhtrang == 'tinhtrang2'  %}
+                                        <button type="submit" id="btChuyenTrangThai">Đã tới điểm đến</button><br>
+                                        <button type="button" id="btxemchitietdiemdon" onclick="xemchitietdiemdon({{donhangdichuyen.vitritaixe_lat}}, {{donhangdichuyen.vitritaixe_var}},{{donhangdichuyen.diem_don_lat}},{{donhangdichuyen.diem_don_var}})">Xem chi tiết</button>
+                                    {% else  %}
+                                        <button type="submit" id="btChuyenTrangThai">Hoàn thành chuyến đi</button><br>
+                                        <button type="button" id="btxemchitietdiemden" onclick="xemchitietdiemden({{donhangdichuyen.diem_don_lat}},{{donhangdichuyen.diem_don_var}},{{donhangdichuyen.diem_den_lat}}, {{donhangdichuyen.diem_den_var}},)">Xem chi tiết</button>
+                                    {% endif %}
+                                   
+                                </form>
+    
+                            </td>
+                        </tr>
+                        {% endfor %}
+    
+                    </tbody>
+                </table>
+               
+            </div> 
+            <div id="viewChiTietMap" >
+                <h3 id="textchitietmap"></h3>
+                <div id="mapiddichuyen" style="height: 600px; width:100%; z-index: 40;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-info" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-close" onclick="closeModalInfo()">
+                <i class="ti-close"></i>
+            </div>
+    
+            <header class="modal-header">
+                <h1>Thông tin</h1>
+            </header>
+    
+            <div class="modal-body">
+                <label for="" class="modal-label">Tên đăng nhập</label>
+                <input type="text" class="modal-input" name="username" value="{{ username }}" readonly>
+                <label for="" class="modal-label">Họ và tên</label>
+                <input type="text" class="modal-input" name="fullname" value="{{ fullname }}" readonly>
+                <label for="" class="modal-label">Email</label>
+                <input type="email" class="modal-input" name="email" value="{{ email }}" readonly>
+                <label for="" class="modal-label">Số điện thoại</label>
+                <input type="text" class="modal-input" name="phonenumber" value="{{ phonenumber }}" readonly>
+                <label for="role" class="modal-label">Quyền</label>
+                <input type="text" class="modal-input" name="role" value="{{ user_role }}" readonly>
+            </div>
+        </div>
+        
+    </div>
+    
+    <script>
+        function openModalInfo() {
+            document.getElementById("modal-info").style.display = "flex";
+        }
+
+        function closeModalInfo() {
+            document.getElementById("modal-info").style.display = "none";
+        }
+
+        document.addEventListener('click', function(event) {
+            var submenu = document.querySelector('.submenu');
+            var menuIcon = document.querySelector('.ti-menu');
+            var isClickInsideMenu = menuIcon.contains(event.target);
+            var isClickInsideSubmenu = submenu.contains(event.target);
+
+            if (!isClickInsideMenu && !isClickInsideSubmenu) {
+                submenu.style.display = 'none';
+            }
+        });
+
+        function toggleSubMenu() {
+            var submenu = document.querySelector('.submenu');
+            submenu.style.display = submenu.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var role = "{{ user_role }}"; 
+        
+            document.querySelectorAll('.choose').forEach(function(submenu) {
+                submenu.style.display = 'none';
+            });
+        
+            document.querySelectorAll('.object li').forEach(function(item) {
+                item.style.display = 'none';
+            });
+        
+            switch (role) {
+                case 'user':
+                    document.getElementById('choose-user').style.display = 'block';
+                    document.querySelector('.object li:nth-child(1)').style.display = 'block'; 
+                    break;
+                case 'driver':
+                    document.getElementById('choose-driver').style.display = 'block';
+                    document.querySelector('.object li:nth-child(2)').style.display = 'block'; 
+                    break;
+                case 'seller':
+                    document.getElementById('choose-vendor').style.display = 'block';
+                    document.querySelector('.object li:nth-child(3)').style.display = 'block';
+                    break;
+                default:
+                    break;
+            }
+        });     
+        
+        var rows = document.querySelectorAll(".location");
+        rows.forEach(function(row) {
+            var tinhtrang = row.getAttribute("data-tinhtrang");
+            if (["tinhtrang1", "tinhtrang4", "tinhtrang2"].includes(tinhtrang)) {
+                document.getElementById("location").style.display = "none";
+            }else{
+                document.getElementById("viewChiTietMap").style.visibility = "hidden";
+            }
+        });
+       
+        
+        
+        function showMenuUser() {
+            document.getElementById("user").style.display = "block";
+            document.getElementById("driver").style.display = "none";
+            document.getElementById("vendor").style.display = "none";
+            document.getElementById("bussiness").style.display = "none";
+        }
+
+        function showMenuDriver() {
+            document.getElementById("user").style.display = "none";
+            document.getElementById("driver").style.display = "block";
+            document.getElementById("vendor").style.display = "none";
+            document.getElementById("bussiness").style.display = "none";
+        }
+
+        function showMenuVendor() {
+            document.getElementById("user").style.display = "none";
+            document.getElementById("driver").style.display = "none";
+            document.getElementById("vendor").style.display = "block";
+            document.getElementById("bussiness").style.display = "none";
+        }
+        function xemlistdonhang() {
+            document.getElementById("textNhanXeError").innerText="";
+            document.getElementById("location").style.display = "none";
+            document.getElementById("donHangValid").style.display = "none";
+            document.getElementById("viewListDonHang").style.display = "block";
+            document.getElementById("viewDonHangDangNhan").style.display = "none";
+            document.getElementById("viewChiTietMap").style.visibility = "hidden";
+            
+        }
+
+        function xemDonHangDangNhan() {
+            document.getElementById("textNhanXeError").innerText="";
+            document.getElementById("location").style.display = "none";
+            document.getElementById("donHangValid").style.display = "none";
+            document.getElementById("viewListDonHang").style.display = "none";
+            document.getElementById("viewDonHangDangNhan").style.display = "block";
+            document.getElementById("viewChiTietMap").style.visibility = "hidden";
+
+        }
+        function xemNhanDon() {
+            var rows = document.querySelectorAll(".location");
+            var status = true
+            rows.forEach(function(row) {
+                var tinhtrang = row.getAttribute("data-tinhtrang");
+                if (["tinhtrang1", "tinhtrang4", "tinhtrang2"].includes(tinhtrang)) {
+                    status=false
+                } 
+            });
+            if(status==true){
+                document.getElementById("location").style.display = "block";
+            }else{
+                document.getElementById("textNhanXeError").innerText="Quý khách đã có đơn hàng đang được xử lý. Nên quý khách không thể nhận đơn tiếp. Vui lòng kiểm tra lại thông tin đơn hàng. Xin cảm ơn!"
+            }
+            document.getElementById("donHangValid").style.display = "none";
+            document.getElementById("viewListDonHang").style.display = "none";
+            document.getElementById("viewDonHangDangNhan").style.display = "none";
+            document.getElementById("viewChiTietMap").style.visibility = "hidden";
+        }
+
+
+        function nhanDon(id) {
+            document.getElementById('idDonHang').value = id;
+
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if there is a message to display
+            var message = "{{ message_nhanDon|escapejs }}";
+            if (message) {
+                alert(message);
+            }
+
+            var messageChuyenTrangThai = "{{ message_chuyenTrangThai|escapejs }}";
+            if (messageChuyenTrangThai) {
+                alert(messageChuyenTrangThai);
+            }
+        });
+
+        function showGetDonHangCoTheNhan() {
+
+            var trElements = document.querySelectorAll('tbody tr');
+
+            // Lặp qua từng phần tử <tr> và lấy id của nó
+            trElements.forEach(function(tr) {
+                var pickup = tr.id.split(',');
+                var lat1 = parseFloat(pickup[0]);
+                var lon1 = parseFloat(pickup[1]);
+                tinhKhoangCach(lat1, lon1).then((result) => {
+                    if(result==false){
+                        document.getElementById(tr.id).style.display = "none";
+                    }else{
+                        document.getElementById(tr.id).style.display = "";
+                    }
+                });  
+                document.getElementById("mapid").style.display = "none";
+                document.getElementById("donHangValid").style.display = "block";          
+            });
+            
+        }
+        
+        
+        var control;
+        var vietnamBounds = L.latLngBounds(
+            L.latLng(8.18, 102.14), // Tọa độ góc trên bên trái
+            L.latLng(23.39, 109.46) // Tọa độ góc dưới bên phải
+        );
+
+        var map = L.map('mapid', {
+            maxBounds: vietnamBounds, // Giới hạn bản đồ chỉ hiển thị khu vực của Việt Nam
+            maxBoundsViscosity: 1.0 // Không cho phép người dùng kéo bản đồ ra ngoài giới hạn
+        }).fitBounds(vietnamBounds);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+        map.off('click');
+
+        var pickupIcon = L.icon({
+            iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            tooltipAnchor: [16, -28],
+            shadowSize: [41, 41]
+        });
+
+        
+        function searchLocation(type) {
+            document.getElementById("donHangValid").style.display = "none";   
+            var inputField = document.getElementById(type + '_location');
+            var suggestionsDiv = document.getElementById(type + '_suggestions');
+            var userInput = inputField.value;
+            // Nếu người dùng đã nhập ít nhất 3 ký tự hoặc chuỗi trống
+            if (userInput.length >= 3 || userInput.length === 0) {
+                // Thực hiện HTTP request để lấy các địa chỉ gợi ý
+                axios.get('https://nominatim.openstreetmap.org/search?format=json&q=' + userInput + '&countrycodes=vn')
+                    .then(function (response) {
+                        var suggestions = response.data;
+                        var suggestionHTML = '';
+
+                        if (suggestions.length > 0) {
+                            suggestionHTML += '<ul>';
+
+                            suggestions.forEach(function (suggestion) {
+                                suggestionHTML += '<li onclick="selectLocation(\'' + type + '\',\'' + suggestion.lat + '\', \'' + suggestion.lon + '\', \'' + suggestion.display_name + '\')">' + suggestion.display_name + '</li>';
+                            });
+
+                            suggestionHTML += '</ul>';
+                        } else {
+                            suggestionHTML += '<p>No suggestions found.</p>';
+                        }
+
+                        suggestionsDiv.innerHTML = suggestionHTML;
+                        suggestionsDiv.style.display = 'block';
+                    })
+                    .catch(function (error) {
+                        console.error('Error fetching suggestions:', error);
+                    });
+            } else {
+                suggestionsDiv.innerHTML = '';
+                suggestionsDiv.style.display = 'none';
+            }
+        }
+
+        function selectLocation(type, lat, lon, address) {
+            map.eachLayer(function (layer) {
+                if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+                    map.removeLayer(layer);
+                }
+            });
+            if (control) {
+                map.removeControl(control);
+            }
+            document.getElementById("mapid").style.display = "block";
+            var url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+            var inputField = document.getElementById(type+'_location_hide');
+            var inputFieldShow = document.getElementById(type+'_location');
+            var suggestionsDiv = document.getElementById(type+'_suggestions');
+            var vitritaixehide = document.getElementById('diachitaixehide');
+            var vitritaixe = document.getElementById('diachitaixe');
+            inputField.value = lat + ',' + lon;
+            vitritaixehide.value = lat + ',' + lon;
+            suggestionsDiv.innerHTML = '';
+            suggestionsDiv.style.display = 'none';
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Phân tích kết quả và trích xuất thông tin địa điểm
+                    var address = data.display_name;
+                    inputFieldShow.value = address;
+                    vitritaixe.value = address;
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                });
+                map.setView([lat, lon], 18);
+                if(type=="driver"){
+                    var driverMarker = L.marker([0, 0], { icon: pickupIcon }).addTo(map);
+                    driverMarker.setLatLng([lat, lon]).bindPopup('Đây là vị trí của bạn.')
+                    .openPopup();
+                }
+                  
+        }  
+
+        function tinhKhoangCach(lat, lon) {
+            return new Promise((resolve, reject) => {
+                var pickup = document.getElementById('driver_location_hide').value.split(',');
+                var lat1 = parseFloat(pickup[0]);
+                var lon1 = parseFloat(pickup[1]);
+                map.eachLayer(function (layer) {
+                    if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+                        map.removeLayer(layer);
+                    }
+                });
+                if (control) {
+                    map.removeControl(control);
+                }
+                control = L.Routing.control({
+                    waypoints: [
+                        L.latLng(lat1, lon1),
+                        L.latLng(lat, lon)
+                    ],
+                    routeWhileDragging: true,
+                }).addTo(map);
+        
+                control.on('routesfound', function (e) {
+                    var routes = e.routes;
+                    var summary = routes[0].summary;
+                    var distance = summary.totalDistance;
+                    var result = (distance <= 5000); // Gán giá trị true nếu khoảng cách nhỏ hơn hoặc bằng 5000
+                    resolve(result); // Trả về kết quả qua Promise
+                });
+            });
+        }
+        
+         // Sử dụng hàm tinhKhoangCach với Promise
+
+        // Tạo biểu tượng (icon) cho điểm đón và điểm đến
+
+        var mapdichuyen = L.map('mapiddichuyen', {
+            maxBounds: vietnamBounds, // Giới hạn bản đồ chỉ hiển thị khu vực của Việt Nam
+            maxBoundsViscosity: 1.0 // Không cho phép người dùng kéo bản đồ ra ngoài giới hạn
+        }).fitBounds(vietnamBounds);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(mapdichuyen);
+        mapdichuyen.off('click');
+
+        var destinationIcon = L.icon({
+            iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            tooltipAnchor: [16, -28],
+            shadowSize: [41, 41]
+        });
+        var pickupMarker = L.marker([0, 0], { icon: pickupIcon }).addTo(mapdichuyen);
+        var destinationMarker = L.marker([0, 0], { icon: destinationIcon }).addTo(mapdichuyen);
+        function xemchitietdiemdon(lat1, lon1, lat2, lon2){
+            calculateRoute(lat1, lon1, lat2, lon2);
+            document.getElementById("textchitietmap").innerHTML = "Vị trí của bạn màu đỏ, vị trí của khách màu xanh. Hãy di chuyển đến điểm đón nào!";
+            document.getElementById("viewChiTietMap").style.visibility = "visible";
+            document.getElementById("location").style.display = "none";
+            document.getElementById("donHangValid").style.display = "none";
+            document.getElementById("viewListDonHang").style.display = "none";
+            document.getElementById("viewDonHangDangNhan").style.display = "block";
+        }
+        function xemchitietdiemden(lat1, lon1, lat2, lon2){
+            calculateRoute(lat1, lon1, lat2, lon2);
+            document.getElementById("textchitietmap").innerHTML = "Vị trí xuất phát màu đỏ, vị trí điểm đến màu xanh. Hãy di chuyển đến điểm đến nào!";
+            document.getElementById("viewChiTietMap").style.visibility = "visible";
+            document.getElementById("location").style.display = "none";
+            document.getElementById("donHangValid").style.display = "none";
+            document.getElementById("viewListDonHang").style.display = "none";
+            document.getElementById("viewDonHangDangNhan").style.display = "block";
+        }
+        function calculateRoute(lat1, lon1, lat2, lon2) {
+            // Xóa tất cả các tuyến đường và điểm trên bản đồ trước khi vẽ tuyến đường mới
+            mapdichuyen.eachLayer(function (layer) {
+                if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+                    mapdichuyen.removeLayer(layer);
+                }
+            });
+            if (control) {
+                mapdichuyen.removeControl(control);
+            }
+
+            // Vẽ điểm đón và điểm đến mới
+            pickupMarker.setLatLng([lat1, lon1]);
+            destinationMarker.setLatLng([lat2, lon2]);
+
+            control = L.Routing.control({
+                waypoints: [
+                    L.latLng(lat1, lon1),
+                    L.latLng(lat2, lon2)
+                ],
+                routeWhileDragging: true,
+                createMarker: function (i, waypoint, n) {
+                    var iconUrl = (i === 0) ? 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png' : 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png';
+                    var icon = L.icon({
+                        iconUrl: iconUrl,
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        tooltipAnchor: [16, -28],
+                        shadowSize: [41, 41]
+                    });
+                    return L.marker(waypoint.latLng, {
+                        draggable: true,
+                        icon: icon
+                    });
+                }
+            }).addTo(mapdichuyen);
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180)
+        }
+
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'menu/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'menu/fonts/themify-icons-font/themify-icons/themify-icons.css' %}">  
+</head>
+<body>
+    <div id="main">
+        <div id="header">
+            <ul class="menu">
+                <li>
+                    <i class="ti-menu" onclick="toggleSubMenu()"></i>
+                    <p>Menu</p>
+                </li>
+            </ul>
+            <a href="#"><img class="logo" src="{% static 'menu/img/logo/logograb.png' %}" alt="logograb"></a>
+            <div class="info">
+                    <ul>
+                        <li><a href="#" onclick="openModalInfo()">Thông tin</a></li>
+                        <li><a href="{% url 'login:dangxuat' %}">Đăng xuất</a></li>
+                    </ul>
+                </i>
+            </div>
+        </div>
+        
+        <div class="submenu" style="display: none;">
+            <ul class="object">
+                <li>Người dùng</li>
+                <li>Tài xế</li>
+                <li>Thương nhân</li>
+            </ul>
+            <div id="choose-user" class="choose">
+                <div>
+                    <li><a href="{% url 'menu:usermove' %}">Di chuyển</a></li>
+                    <p>Tất tần tật về các dịch vụ phục vụ nhu cầu đi lại của bạn</p>
+                </div>
+                <div>
+                    <li><a href="{% url 'menu:userfood' %}">GrabFood</a></li>
+                    <p>Thưởng thức món ngon ngay tại nhà</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabExpress</a></li>
+                    <p>Dịch vụ giao hàng nhanh chóng và tiện lợi</p>
+                </div>
+            </div>
+            <div id="choose-driver" class="choose" style="display: none;">
+                <div>
+                    <li><a href="{% url 'menu:drivermove' %}">Di chuyển</a></li>
+                    <p>Làm chủ tài chính và thời gian.</p>
+                </div>
+                <div>
+                    <li><a href="{% url 'menu:driverfood' %}">GrabFood</a></li>
+                    <p>Kiếm thêm thu nhập với dịch vụ giao thức ăn.</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabExpress</a></li>
+                    <p>Kiếm nhiều hơn nữa với dịch vụ giao hàng.</p>
+                </div>
+            </div>
+            <div id="choose-vendor" class="choose" style="display: none;">
+                <div>
+                    <li><a href="{% url 'menu:sellerfood' %}">GrabFood</a></li>
+                    <p>Tăng doanh thu khi mở quán ăn trên Grab và tiếp cận hàng triệu người dùng</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabMart</a></li>
+                    <p>Phát triển doanh nghiệp của bạn bằng cách đưa hàng hóa đến tận tay người tiêu dùng</p>
+                </div>
+            </div>
+        </div>        
+
+        <div id="content">
+            <div class="slider">
+                <video autoplay loop class="video">
+                    <source src="{% static 'menu/video/slide-video.webm' %}" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="introduce">
+                <div class="title">
+                    <h2>Từ những dịch vụ thiết yếu đến cơ hội gia tăng thu nhập. Tất cả đều có trên một nền tảng</h2>
+                </div>
+
+                <div class="menu">
+                    <ul>
+                        <li class="selected"><a href="javascript:void(0)" onclick="selectMenuItem(this)">Người tiêu dùng</a></li>
+                        <li><a href="javascript:void(0)" onclick="selectMenuItem(this)">Đối tác tài xế</a></li>
+                        <li><a href="javascript:void(0)" onclick="selectMenuItem(this)">Đối tác thương nhân</a></li>
+                    </ul>
+                </div>
+                
+                <div id="user" style="display: block;">
+                    <div class="select">
+                        <div>
+                            <h2>Giao hàng</h2>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <h3>Đồ ăn</h3>
+                                    <p>Giao món tận tay</p>
+                                </li>
+                                <li>
+                                    <h3>Đi chợ</h3>
+                                    <p>Tìm kiếm mọi thứ bạn cần, hàng tạp hóa và hơn thế nữa</p>
+                                </li>
+                                <li>
+                                    <h3>Giao hàng</h3>
+                                    <p>Giao hàng, gói kiện và hơn thế nữa</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="select">
+                        <div>
+                            <h2>Di chuyển</h2>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <h3>Di chuyển</h3>
+                                    <p>Chọn phương tiện di chuyển phù hợp, đi đến nơi về đến chốn an toàn</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="select">
+                        <div>
+                            <h2>Dịch vụ tài chính</h2>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <h3>Thanh toán</h3>
+                                    <p>Thanh toán không tiền mặt bảo mật và liền mạch, dù là trực tuyến hay tại cửa hàng</p>
+                                </li>
+                                <li>
+                                    <h3>Hóa đơn</h3>
+                                    <p>Thanh toán đơn dễ dàng, tiện lợi</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="driver" style="display: none;">
+                    <div class="select">
+                        <div>
+                            <h2>Tăng cơ hội thu nhập</h2>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <h3>Trở thành đối tác tài xế</h3>
+                                    <p>Làm chủ thời gian của mình</p>
+                                </li>
+                                <li>
+                                    <h3>Trở thành đối tác giao hàng</h3>
+                                    <p>Giao hàng và tăng cơ hội thu nhập</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="vendor" style="display: none;">
+                    <div class="select">
+                        <div>
+                            <h2>Phát triển doanh nghiệp của bạn</h2>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <h3>Bán hàng trên Grab</h3>
+                                    <p>Trở thành đối tác của Grab để tiếp cận được nhiều khách hàng hơn.</p>
+                                </li>
+                                <li>
+                                    <h3>Thanh toán không tiền mặt</h3>
+                                    <p>Giao dịch dễ dàng và an toàn với phương thức thanh toán không tiền mặt.</p>
+                                </li>
+                                <li>
+                                    <h3>Giao hàng với chúng tôi</h3>
+                                    <p>Giao mọi đơn đặt hàng đến khách hàng của bạn một cách thuận tiện.</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-info" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-close" onclick="closeModalInfo()">
+                <i class="ti-close"></i>
+            </div>
+    
+            <header class="modal-header">
+                <h1>Thông tin</h1>
+            </header>
+    
+            <div class="modal-body">
+                <label for="" class="modal-label">Tên đăng nhập</label>
+                <input type="text" class="modal-input" name="username" value="{{ username }}" readonly>
+                <label for="" class="modal-label">Họ và tên</label>
+                <input type="text" class="modal-input" name="fullname" value="{{ fullname }}" readonly>
+                <label for="" class="modal-label">Email</label>
+                <input type="email" class="modal-input" name="email" value="{{ email }}" readonly>
+                <label for="" class="modal-label">Số điện thoại</label>
+                <input type="text" class="modal-input" name="phonenumber" value="{{ phonenumber }}" readonly>
+                <label for="role" class="modal-label">Quyền</label>
+                <input type="text" class="modal-input" name="role" value="{{ user_role }}" readonly>
+            </div>
+        </div>
+    </div>    
+
+    <script>
+        function openModalInfo() {
+            document.getElementById("modal-info").style.display = "flex";
+        }
+
+        function closeModalInfo() {
+            document.getElementById("modal-info").style.display = "none";
+        }
+
+        document.addEventListener('click', function(event) {
+            var submenu = document.querySelector('.submenu');
+            var menuIcon = document.querySelector('.ti-menu');
+            var isClickInsideMenu = menuIcon.contains(event.target);
+            var isClickInsideSubmenu = submenu.contains(event.target);
+
+            if (!isClickInsideMenu && !isClickInsideSubmenu) {
+                submenu.style.display = 'none';
+            }
+        });
+
+        function toggleSubMenu() {
+            var submenu = document.querySelector('.submenu');
+            submenu.style.display = submenu.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var role = "{{ user_role }}"; 
+        
+            document.querySelectorAll('.choose').forEach(function(submenu) {
+                submenu.style.display = 'none';
+            });
+        
+            document.querySelectorAll('.object li').forEach(function(item) {
+                item.style.display = 'none';
+            });
+        
+            switch (role) {
+                case 'user':
+                    document.getElementById('choose-user').style.display = 'block';
+                    document.querySelector('.object li:nth-child(1)').style.display = 'block'; 
+                    break;
+                case 'driver':
+                    document.getElementById('choose-driver').style.display = 'block';
+                    document.querySelector('.object li:nth-child(2)').style.display = 'block'; 
+                    break;
+                case 'seller':
+                    document.getElementById('choose-vendor').style.display = 'block';
+                    document.querySelector('.object li:nth-child(3)').style.display = 'block';
+                    break;
+                default:
+                    break;
+            }
+        });        
+        
+        function selectMenuItem(element) {
+            var menuItems = document.querySelectorAll('#content .menu li');
+            menuItems.forEach(function(item) {
+                item.classList.remove('selected');
+            });
+            element.parentNode.classList.add('selected');
+            var menuItem = element.textContent.trim(); 
+            switch (menuItem) {
+                case 'Người tiêu dùng':
+                    showMenuUser();
+                    break;
+                case 'Đối tác tài xế':
+                    showMenuDriver();
+                    break;
+                case 'Đối tác thương nhân':
+                    showMenuVendor();
+                    break;
+                case 'Doanh nghiệp':
+                    showMenuBussiness();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function showMenuUser() {
+            document.getElementById("user").style.display = "block";
+            document.getElementById("driver").style.display = "none";
+            document.getElementById("vendor").style.display = "none";
+            document.getElementById("bussiness").style.display = "none";
+        }
+
+        function showMenuDriver() {
+            document.getElementById("user").style.display = "none";
+            document.getElementById("driver").style.display = "block";
+            document.getElementById("vendor").style.display = "none";
+            document.getElementById("bussiness").style.display = "none";
+        }
+
+        function showMenuVendor() {
+            document.getElementById("user").style.display = "none";
+            document.getElementById("driver").style.display = "none";
+            document.getElementById("vendor").style.display = "block";
+            document.getElementById("bussiness").style.display = "none";
+        }
+    </script>
+</body>
+</html>

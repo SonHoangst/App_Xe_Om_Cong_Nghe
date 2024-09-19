@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'menu/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'menu/fonts/themify-icons-font/themify-icons/themify-icons.css' %}">  
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div id="main">
+        <div id="header">
+            <ul class="menu">
+                <li>
+                    <i class="ti-menu" onclick="toggleSubMenu()"></i>
+                    <p>Menu</p>
+                </li>
+            </ul>
+            <a href="#"><img class="logo" src="{% static 'menu/img/logo/logograb.png' %}" alt="logograb"></a>
+            <div class="info">
+                    <ul>
+                        <li><a href="#" onclick="openModalInfo()">Thông tin</a></li>
+                        <li><a href="{% url 'login:dangxuat' %}">Đăng xuất</a></li>
+                    </ul>
+                </i>
+            </div>
+        </div>
+        
+        <div class="submenu" style="display: none;">
+            <ul class="object">
+                <li>Người dùng</li>
+                <li>Tài xế</li>
+                <li>Thương nhân</li>
+            </ul>
+            <div id="choose-user" class="choose">
+                <div>
+                    <li><a href="#">Di chuyển</a></li>
+                    <p>Tất tần tật về các dịch vụ phục vụ nhu cầu đi lại của bạn</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabFood</a></li>
+                    <p>Thưởng thức món ngon ngay tại nhà</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabExpress</a></li>
+                    <p>Dịch vụ giao hàng nhanh chóng và tiện lợi</p>
+                </div>
+            </div>
+            <div id="choose-driver" class="choose" style="display: none;">
+                <div>
+                    <li><a href="#">Di chuyển</a></li>
+                    <p>Làm chủ tài chính và thời gian.</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabFood</a></li>
+                    <p>Kiếm thêm thu nhập với dịch vụ giao thức ăn.</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabExpress</a></li>
+                    <p>Kiếm nhiều hơn nữa với dịch vụ giao hàng.</p>
+                </div>
+            </div>
+            <div id="choose-vendor" class="choose" style="display: none;">
+                <div>
+                    <li><a href="#">GrabFood</a></li>
+                    <p>Tăng doanh thu khi mở quán ăn trên Grab và tiếp cận hàng triệu người dùng</p>
+                </div>
+                <div>
+                    <li><a href="#">GrabMart</a></li>
+                    <p>Phát triển doanh nghiệp của bạn bằng cách đưa hàng hóa đến tận tay người tiêu dùng</p>
+                </div>
+            </div>
+        </div>        
+
+        <div id="content">
+            <div class="slider">
+                <video autoplay loop class="video">
+                    <source src="{% static 'menu/video/slide-video.webm' %}" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            
+
+            <div style="display:flex; flex-direction: row; ">
+                <div style= "width: 40%;">
+                    <div class="listfood">
+                        <a href="javascript:void(0)" class="login-btn" onclick="openModalQuanAn()">Chỉnh sửa quán ăn</a>
+                        <a href="javascript:void(0)" class="login-btn" onclick="openModalAddFood()">Thêm đồ ăn</a>
+                        <h2>DANH SÁCH MÓN ĂN</h2>
+                        <table class="table table-bordered mt30">
+                            <thead class="bg-darkgray text-bold td">
+                                <tr>
+                                    <td>Tên món ăn</td>
+                                    <td>Giá mua</td>
+                                    <td>Tình trạng</td>
+                                    <td>Chi tiết</td>
+                                    <td>Xóa</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for doan in doan_list %}
+                                <tr id="doan-row-{{ doan.id }}">
+                                    <td>{{ doan.tendoan }}</td>
+                                    <td>{{ doan.giamua }}</td>
+                                    <td>{{ doan.get_tinhtrangdoan_display }}</td>
+                                    <td>
+                                        <a href="javascript:void(0)" class="login-btn" onclick="openModalSuaFood({{ doan.id }}, '{{ doan.tendoan }}', {{ doan.giamua }}, '{{ doan.tinhtrangdoan }}')">Xem</a>
+                                    </td>
+                                    <td>
+                                        <a href="javascript:void(0)" class="login-btn" onclick="deleteDoan({{ doan.id }})">Xóa</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+        
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div style= "width: 58%;">
+                {%if danhsachdonhangdangthuchien %}
+                    <div class="listquanan">
+                        <h2>Danh sách đang thực hiện</h2>
+                        <table class="list_quanan">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 10px;border: 2px solid #ddd;">Tên quán</th>
+                                    <th style="padding: 10px;border: 2px solid #ddd;">Tên món ăn</th>
+                                    <th style="padding: 10px;border: 2px solid #ddd;">Đơn giá</th>
+                                    <th style="padding: 10px;border: 2px solid #ddd;">Số lượng</th>
+                                    <th style="padding: 10px;border: 2px solid #ddd;">Thành tiền</th>
+                                    <th style="padding: 10px;border: 2px solid #ddd;">Trạng thái</th>
+                                    <th style="padding: 10px;border: 2px solid #ddd;">Tùy chọn</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for giohang in danhsachdonhangdangthuchien %}
+                                {%if giohang.doan.tinhtrangdoan == 'tinhtrang2' %}
+                                {%elif giohang.doan.tinhtrangdoan == 'Hết hàng'%}
+                                {%else%}
+                                    <tr>
+                                        <td style="padding: 10px;border: 2px solid #ddd;">{{ giohang.doan.quanan.tenquan }}</td>
+                                        <td style="padding: 10px;border: 2px solid #ddd;">{{ giohang.doan.tendoan }}</td>
+                                        <td style="padding: 10px;border: 2px solid #ddd;">{{ giohang.doan.giamua }}</td>
+                                        <td style="padding: 10px;border: 2px solid #ddd;">{{ giohang.soluong }}</td>
+                                        <td style="padding: 10px;border: 2px solid #ddd;">{{ giohang.tongTien }}
+                                        </td>
+                                        <td style="padding: 10px;border: 2px solid #ddd;">
+                                            {{giohang.get_tinhtrang_display}}
+                                        </td>
+                                        <td style="padding: 10px;border: 2px solid #ddd;">
+                                            <form  method="post">
+                                                {% csrf_token %}
+                                                {%if giohang.tinhtrang == 'tinhtrang2' %}
+                                                    <input type="hidden" name="action" value="xacNhanDonHang" style="display: none">
+                                                    <button type="submit" id="btDatAn">Xác nhận đơn hàng</button>
+                                                {%elif giohang.tinhtrang == 'tinhtrang4'%}
+                                                    <h3 >Chờ tài xế xác nhận</h3>
+                                                {%elif giohang.tinhtrang == 'tinhtrang5'%}
+                                                    <input type="hidden" name="action" value="xacNhanChuanBi" style="display: none">
+                                                    <button type="submit" id="btDatAn">Xác nhận đang chuẩn bị</button>
+                                                {%elif giohang.tinhtrang == 'tinhtrang6'%}
+                                                    <h3 >Chờ tài xế giao hàng</h3>
+                                                {%endif%}
+                                                <input type="text" class="modal-input" name="giohangid" style="display: none" value="{{ giohang.id }}">
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {%endif%}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {%endif%}
+                </div>
+            </div>
+
+            
+            <div class="location">
+                <h2>ĐỊA CHỈ CỬA HÀNG</h2>
+                <form id="locationForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="setAddress">
+                    <input type="hidden" name="quanan_id" value="{{ quanan_id }}">
+                    <label for="pickup_location">Địa chỉ:</label>
+                    <input type="text" id="pickup_location" name="pickup_location" style="width: 70%;">
+                    <input type="text" id="pickup_location_hide" name="pickup_location_hide" style="display: none;">
+                    <div id="pickup_suggestions" style="display: none;"></div>
+                    <br>
+                        <button type="button" onclick="searchLocation('pickup')">Tìm địa chỉ</button>
+                    <br>
+                    <button type="submit" id="viewDetail">Xác nhận</button>
+                    <div id="message">
+                        {% if message_suaDiaChi %}
+                            <h2 class="message_suaDiaChi">{{ message_suaDiaChi }}</h2>
+                        {% endif %}
+                    </div>
+                </form>
+                <div id="mapid" style="height: 400px; width:100%; z-index: 40;"></div>
+            </div>
+            {%if danhsachdonhang %}
+                    <div class="listquanan">
+                        <h2>Danh sách những đơn hàng của bạn</h2>
+                        <table class="list_quanan">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 10px;border: 2px solid #ddd;">Tên nguời mua</th>
+                                    <th style="padding: 10px;border: 2px solid #ddd;">Tên món ăn</th>
+                                    <th style="padding: 10px;border: 2px solid #ddd;">Số lượng</th>
+                                    <th style="padding: 10px;border: 2px solid #ddd;">Thành tiền</th>
+                                    <th style="padding: 10px;border: 2px solid #ddd;">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                {% for giohang in danhsachdonhang %}
+                                
+                                
+                                    <tr>
+                                        <td style="padding: 10px;border: 2px solid #ddd;">{{ giohang.nguoi_dung.username }}</td>
+                                        <td style="padding: 10px;border: 2px solid #ddd;">{{ giohang.doan.tendoan }}</td>
+                                        <td style="padding: 10px;border: 2px solid #ddd;">{{ giohang.soluong }}</td>
+                                        <td style="padding: 10px;border: 2px solid #ddd;">{{ giohang.tongTien }}
+                                        </td>
+                                        <td style="padding: 10px;border: 2px solid #ddd;">
+                                            {{giohang.get_tinhtrang_display}}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+            {%endif%}
+        </div>
+    </div>
+
+    <div class="modal" id="modal-info" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-close" onclick="closeModalInfo()">
+                <i class="ti-close"></i>
+            </div>
+    
+            <header class="modal-header">
+                <h1>Thông tin</h1>
+            </header>
+    
+            <div class="modal-body">
+                <label for="" class="modal-label">Tên đăng nhập</label>
+                <input type="text" class="modal-input" name="username" value="{{ username }}" readonly>
+                <label for="" class="modal-label">Họ và tên</label>
+                <input type="text" class="modal-input" name="fullname" value="{{ fullname }}" readonly>
+                <label for="" class="modal-label">Email</label>
+                <input type="email" class="modal-input" name="email" value="{{ email }}" readonly>
+                <label for="" class="modal-label">Số điện thoại</label>
+                <input type="text" class="modal-input" name="phonenumber" value="{{ phonenumber }}" readonly>
+                <label for="role" class="modal-label">Quyền</label>
+                <input type="text" class="modal-input" name="role" value="{{ user_role }}" readonly>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="modal-quanan" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-close" onclick="closeModalQuanAn()">
+                <i class="ti-close"></i>
+            </div>
+    
+            <header class="modal-header">
+                <h1>Thông tin</h1>
+            </header>
+    
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="quanan">
+                    <input type="hidden" name="quanan_id" value="{{ quanan_id }}">
+                    <label for="" class="modal-label">Tên quán ăn</label>
+                    <input type="text" class="modal-input" name="tenquan" value="{{ tenquan }}">
+                    <label for="" class="modal-label">Tình trạng quán</label>
+                    <select id="tinhtrangquanan" class="modal-input" name="tinhtrangquanan">
+                        <option value="Mở cửa" {% if tinhtrangquan == 'Mở cửa' %} selected {% endif %}>Mở cửa</option>
+                        <option value="Đóng cửa" {% if tinhtrangquan == 'Đóng cửa' %} selected {% endif %}>Đóng cửa</option>
+                    </select>
+                    <button type="submit" class="submit-btn">Xác nhận</button>
+                    <div id="message">
+                        {% if message_quanan %}
+                            <h2 class="message_quanan">{{ message_quanan }}</h2>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>   
+
+    <div class="modal" id="modalAddFood" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-close" onclick="closeModalAddFood()">
+                <i class="ti-close"></i>
+            </div>
+
+            <header class="modal-header">
+                <h1>Thêm đồ ăn</h1>
+            </header>
+
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="addfood">
+                    <label for="tendoan" class="modal-label">Tên đồ ăn</label>
+                    <input type="text" id="tendoan" name="tendoan" class="modal-input">
+                    <label for="giamua" class="modal-label">Giá mua</label>
+                    <input type="number" id="giamua" name="giamua" class="modal-input">
+                    <label for="tinhtrangdoan" class="modal-label">Tình trạng đồ ăn</label>
+                    <select id="tinhtrangdoan" class="modal-input" name="tinhtrangdoan">
+                        <option value="Còn hàng">Còn hàng</option>
+                        <option value="Hết hàng">Hết hàng</option>
+                    </select>
+                    <button type="submit" class="submit-btn">Thêm</button>
+                    <div id="message">
+                        {% if message_addfood %}
+                            <h2 class="message_addfood">{{ message_addfood }}</h2>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div> 
+
+    <div class="modal" id="modal-suafood" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-close" onclick="closeModalSuaFood()">
+                <i class="ti-close"></i>
+            </div>
+    
+            <header class="modal-header">
+                <h1>Sửa thông tin món ăn</h1>
+            </header>
+    
+            <div class="modal-body">
+                <form method="post" id="food-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="suafood">
+                    <input type="hidden" name="doan_id" id="doan_id2">
+                    <label for="tendoan" class="modal-label">Tên đồ ăn</label>
+                    <input type="text" class="modal-input" name="tendoan" id="tendoan2">
+                    <label for="giamua" class="modal-label">Giá mua</label>
+                    <input type="number" class="modal-input" name="giamua" id="giamua2">
+                    <label for="tinhtrangdoan" class="modal-label">Tình trạng đồ ăn</label>
+                    <select id="tinhtrangdoan2" class="modal-input" name="tinhtrangdoan">
+                        <option value="Còn hàng">Còn hàng</option>
+                        <option value="Hết hàng">Hết hàng</option>
+                    </select>
+                    <button type="submit" class="submit-btn">Xác nhận</button>
+                    <div id="message">
+                        {% if message_suafood %}
+                            <h2 class="message_suafood">{{ message_suafood }}</h2>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if there is a message to display
+            var message = "{{ messageXacNhan|escapejs }}";
+            if (message) {
+                alert(message);
+            }
+        });
+
+        var quananLat = {{ quanan_lat }};
+            var quananLng = {{ quanan_var }};
+
+            if (quananLat != 0 && quananLng != 0) {
+                var url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${quananLat}&lon=${quananLng}`;
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        var address = data.display_name;
+                        selectLocation(quananLat, quananLng, address)
+                    })
+                    .catch(error => {
+                        console.error('Lỗi:', error);
+                    });
+            }
+        
+        function openModalInfo() {
+            document.getElementById("modal-info").style.display = "flex";
+        }
+
+        function closeModalInfo() {
+            document.getElementById("modal-info").style.display = "none";
+        }
+
+        function openModalQuanAn() {
+            document.getElementById("modal-quanan").style.display = "flex";
+        }
+
+        function closeModalQuanAn() {
+            document.getElementById("modal-quanan").style.display = "none";
+        }
+
+        function openModalAddFood() {
+            document.getElementById("modalAddFood").style.display = "flex";
+        }
+
+        function closeModalAddFood() {
+            document.getElementById("modalAddFood").style.display = "none";
+        }
+
+        function openModalSuaFood(id, tendoan, giamua, tinhtrangdoan) {
+            document.getElementById('doan_id2').value = id;
+            document.getElementById('tendoan2').value = tendoan;
+            document.getElementById('giamua2').value = giamua;
+            document.getElementById('tinhtrangdoan2').value = tinhtrangdoan;
+            document.getElementById('modal-suafood').style.display = 'flex';
+        }
+
+        function closeModalSuaFood() {
+            document.getElementById("modal-suafood").style.display = "none";
+        }
+
+        document.addEventListener('click', function(event) {
+            var submenu = document.querySelector('.submenu');
+            var menuIcon = document.querySelector('.ti-menu');
+            var isClickInsideMenu = menuIcon.contains(event.target);
+            var isClickInsideSubmenu = submenu.contains(event.target);
+
+            if (!isClickInsideMenu && !isClickInsideSubmenu) {
+                submenu.style.display = 'none';
+            }
+        });
+
+        function toggleSubMenu() {
+            var submenu = document.querySelector('.submenu');
+            submenu.style.display = submenu.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var role = "{{ user_role }}"; 
+        
+            document.querySelectorAll('.choose').forEach(function(submenu) {
+                submenu.style.display = 'none';
+            });
+        
+            document.querySelectorAll('.object li').forEach(function(item) {
+                item.style.display = 'none';
+            });
+        
+            switch (role) {
+                case 'user':
+                    document.getElementById('choose-user').style.display = 'block';
+                    document.querySelector('.object li:nth-child(1)').style.display = 'block'; 
+                    break;
+                case 'driver':
+                    document.getElementById('choose-driver').style.display = 'block';
+                    document.querySelector('.object li:nth-child(2)').style.display = 'block'; 
+                    break;
+                case 'seller':
+                    document.getElementById('choose-vendor').style.display = 'block';
+                    document.querySelector('.object li:nth-child(3)').style.display = 'block';
+                    break;
+                default:
+                    break;
+            }
+        });        
+        
+        function selectMenuItem(element) {
+            var menuItems = document.querySelectorAll('#content .menu li');
+            menuItems.forEach(function(item) {
+                item.classList.remove('selected');
+            });
+            element.parentNode.classList.add('selected');
+            var menuItem = element.textContent.trim(); 
+            switch (menuItem) {
+                case 'Người tiêu dùng':
+                    showMenuUser();
+                    break;
+                case 'Đối tác tài xế':
+                    showMenuDriver();
+                    break;
+                case 'Đối tác thương nhân':
+                    showMenuVendor();
+                    break;
+                case 'Doanh nghiệp':
+                    showMenuBussiness();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function showMenuUser() {
+            document.getElementById("user").style.display = "block";
+            document.getElementById("driver").style.display = "none";
+            document.getElementById("vendor").style.display = "none";
+            document.getElementById("bussiness").style.display = "none";
+        }
+
+        function showMenuDriver() {
+            document.getElementById("user").style.display = "none";
+            document.getElementById("driver").style.display = "block";
+            document.getElementById("vendor").style.display = "none";
+            document.getElementById("bussiness").style.display = "none";
+        }
+
+        function showMenuVendor() {
+            document.getElementById("user").style.display = "none";
+            document.getElementById("driver").style.display = "none";
+            document.getElementById("vendor").style.display = "block";
+            document.getElementById("bussiness").style.display = "none";
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var errorMessage = document.querySelector('.message_addfood');
+            if (errorMessage) {
+                document.getElementById('modalAddFood').style.display = 'flex';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var errorMessage = document.querySelector('.message_quanan');
+            if (errorMessage) {
+                document.getElementById('modal-quanan').style.display = 'flex';
+            }
+        });
+
+        document.addEventListener('DOMContdoan-rowentLoaded', function() {
+            var errorMessage = document.querySelector('.message_suafood');
+            if (errorMessage) {
+                document.getElementById('modal-suafood').style.display = 'none';
+            }
+        });
+
+        function deleteDoan(doanId) {
+            if (confirm('Bạn có chắc chắn muốn xóa đồ ăn này không?')) {
+                $.ajax({
+                    url: '',
+                    type: 'POST',
+                    data: {
+                        'action': 'deletefood',
+                        'doan_id': doanId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Xóa đồ ăn thành công');
+                            // Remove the deleted item from the table
+                            $('#doan-row-' + doanId).remove();
+                        } else {
+                            alert('Có lỗi xảy ra, vui lòng thử lại');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            }
+        }
+
+        var control;
+        var vietnamBounds = L.latLngBounds(
+            L.latLng(8.18, 102.14), // Tọa độ góc trên bên trái
+            L.latLng(23.39, 109.46) // Tọa độ góc dưới bên phải
+        );
+
+        var map = L.map('mapid', {
+            maxBounds: vietnamBounds, // Giới hạn bản đồ chỉ hiển thị khu vực của Việt Nam
+            maxBoundsViscosity: 1.0 // Không cho phép người dùng kéo bản đồ ra ngoài giới hạn
+        }).fitBounds(vietnamBounds);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+        map.off('click');
+
+        var pickupIcon = L.icon({
+            iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            tooltipAnchor: [16, -28],
+            shadowSize: [41, 41]
+        });
+
+        var pickupMarker = L.marker([0, 0], { icon: pickupIcon }).addTo(map);
+        function searchLocation(type) {
+            var inputField = document.getElementById(type + '_location');
+            var suggestionsDiv = document.getElementById(type + '_suggestions');
+            var userInput = inputField.value;
+            // Nếu người dùng đã nhập ít nhất 3 ký tự hoặc chuỗi trống
+            if (userInput.length >= 3 || userInput.length === 0) {
+                // Thực hiện HTTP request để lấy các địa chỉ gợi ý
+                axios.get('https://nominatim.openstreetmap.org/search?format=json&q=' + userInput + '&countrycodes=vn')
+                    .then(function (response) {
+                        var suggestions = response.data;
+                        var suggestionHTML = '';
+
+                        if (suggestions.length > 0) {
+                            suggestionHTML += '<ul>';
+
+                            suggestions.forEach(function (suggestion) {
+                                suggestionHTML += '<li onclick="selectLocation(\'' + suggestion.lat + '\', \'' + suggestion.lon + '\', \'' + suggestion.display_name + '\')">' + suggestion.display_name + '</li>';
+                            });
+
+                            suggestionHTML += '</ul>';
+                        } else {
+                            suggestionHTML += '<p>No suggestions found.</p>';
+                        }
+
+                        suggestionsDiv.innerHTML = suggestionHTML;
+                        suggestionsDiv.style.display = 'block';
+                    })
+                    .catch(function (error) {
+                        console.error('Error fetching suggestions:', error);
+                    });
+            } else {
+                suggestionsDiv.innerHTML = '';
+                suggestionsDiv.style.display = 'none';
+            }
+        }
+
+        function selectLocation( lat, lon, address) {
+            var url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+            var inputField = document.getElementById('pickup_location_hide');
+            var inputFieldShow = document.getElementById('pickup_location');
+            var suggestionsDiv = document.getElementById('pickup_suggestions');
+            inputField.value = lat + ',' + lon;
+            suggestionsDiv.innerHTML = '';
+            suggestionsDiv.style.display = 'none';
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Phân tích kết quả và trích xuất thông tin địa điểm
+                    var address = data.display_name;
+                    inputFieldShow.value = address;
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                });
+                map.setView([lat, lon], 18);
+                pickupMarker.setLatLng([lat, lon]).bindPopup('Đây là vị trí của bạn.')
+                .openPopup();  
+        }  
+    </script>
+</body>
+</html>
