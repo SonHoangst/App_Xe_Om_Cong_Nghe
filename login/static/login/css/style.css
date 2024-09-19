@@ -1,0 +1,229 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+#header {
+    height: 70px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    padding-left: 64px;
+    padding-right: 64px;
+}
+
+#header .logo {
+    width: 90px;
+    height: 35px;
+    margin-left: 20px;
+}
+
+#header .login-btn {
+    margin-left: auto; 
+    margin-right: 20px; 
+    text-decoration: none;
+    font-size: 20px;
+    color: #fff;
+    padding: 12px;
+    background-color: #00804a;
+    border-radius: 10px;
+}
+
+#header .login-btn:hover {
+    cursor: pointer;
+    background-color: #006633;
+}
+
+#content {
+    margin-top: 70px;
+}
+
+#content .slider {
+    height: 602px;
+    position: relative;
+    overflow: hidden;
+}
+
+#content .video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#content .introduce {
+    padding-left: 127px;
+    padding-right: 127px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#content .title {
+    width: 50%;
+    padding-top: 48px;
+    padding-bottom: 32px;
+}
+
+#content .title h2 {
+    font-size: 36px;
+}
+
+#content .menu  {
+    padding: 64px 0;
+}
+
+#content .menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#content .menu li {
+    display: inline-block;
+    cursor: pointer;
+    padding: 12px 32px;
+}
+
+#content .menu li.selected {
+    background-color: #000;
+    border-radius: 20px;
+}
+
+#content .menu li.selected a {
+    color: #fff;
+}
+
+#content .menu li.selected:hover a {
+    color: #fff;
+}
+
+#content .menu li:hover a {
+    color: #333;
+}
+
+#content .menu a {
+    text-decoration: none;
+    font-size: 22px;
+    color: #697078;
+}
+
+.select {
+    display: flex;
+    flex-direction: row; 
+    border-top: 1px solid #ccc;
+    padding-top: 32px;
+}
+
+.select h2 {
+    font-size: 44px;
+    font-weight: 500;
+}
+
+.select > div {
+    flex: 1; 
+}
+
+.select ul {
+    list-style-type: none;
+}
+
+.select li {
+    padding-top: 32px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #ccc;
+}
+
+.select li h3, 
+.select li p {
+    font-size: 21px;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    display: none;
+}
+
+.modal .modal-container {
+    background: #fff;
+    width: 600px;
+    position: relative;
+}
+
+.modal .modal-close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 12px;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.modal .modal-close:hover {
+    opacity: 1;
+}
+
+.modal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal .modal-body {
+    display: block;
+    padding: 16px;
+}
+
+.modal .modal-label {
+    display: block;
+    font-size: 18px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.modal .modal-input {
+    border: 1px solid #ccc;
+    width: 100%;
+    font-size: 12px;
+    padding: 8px;
+    margin-bottom: 4px;
+}
+
+.modal .submit-btn {
+    background: #009688;
+    border: none;
+    color: #fff;
+    width: 100%;
+    font-size: 15px;
+    text-transform: uppercase;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.modal .submit-btn:hover {
+    opacity: 0.9;
+}
+
+.modal #login-message {
+    margin-top: 15px;
+    color: #009688;
+}
+
+.modal .modal-footer {
+    padding: 16px;
+    text-align: right;
+    font-size: 18px;
+}

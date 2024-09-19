@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'login/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'login/fonts/themify-icons-font/themify-icons/themify-icons.css' %}">  
+</head>
+<body>
+    <div id="main">
+        <div id="header">
+            <a href="#"><img class="logo" src="{% static 'login/img/logo/logograb.png' %}" alt="logograb"></a>
+            <a href="javascript:void(0)" class="login-btn" onclick="openModalLogin()">Đăng nhập</a>
+        </div>
+
+        <div id="content">
+            <div class="slider">
+                <video autoplay loop class="video">
+                    <source src="{% static 'login/video/slide-video.webm' %}" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="introduce">
+                <div class="title">
+                    <h2>Từ những dịch vụ thiết yếu đến cơ hội gia tăng thu nhập. Tất cả đều có trên một nền tảng</h2>
+                </div>
+
+                <div class="menu">
+                    <ul>
+                        <li class="selected"><a href="javascript:void(0)" onclick="selectMenuItem(this)">Người tiêu dùng</a></li>
+                        <li><a href="javascript:void(0)" onclick="selectMenuItem(this)">Đối tác tài xế</a></li>
+                        <li><a href="javascript:void(0)" onclick="selectMenuItem(this)">Đối tác thương nhân</a></li>
+                    </ul>
+                </div>
+                
+                <div id="user" style="display: block;">
+                    <div class="select">
+                        <div>
+                            <h2>Giao hàng</h2>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <h3>Đồ ăn</h3>
+                                    <p>Giao món tận tay</p>
+                                </li>
+                                <li>
+                                    <h3>Đi chợ</h3>
+                                    <p>Tìm kiếm mọi thứ bạn cần, hàng tạp hóa và hơn thế nữa</p>
+                                </li>
+                                <li>
+                                    <h3>Giao hàng</h3>
+                                    <p>Giao hàng, gói kiện và hơn thế nữa</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="select">
+                        <div>
+                            <h2>Di chuyển</h2>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <h3>Di chuyển</h3>
+                                    <p>Chọn phương tiện di chuyển phù hợp, đi đến nơi về đến chốn an toàn</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="select">
+                        <div>
+                            <h2>Dịch vụ tài chính</h2>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <h3>Thanh toán</h3>
+                                    <p>Thanh toán không tiền mặt bảo mật và liền mạch, dù là trực tuyến hay tại cửa hàng</p>
+                                </li>
+                                <li>
+                                    <h3>Hóa đơn</h3>
+                                    <p>Thanh toán đơn dễ dàng, tiện lợi</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="driver" style="display: none;">
+                    <div class="select">
+                        <div>
+                            <h2>Tăng cơ hội thu nhập</h2>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <h3>Trở thành đối tác tài xế</h3>
+                                    <p>Làm chủ thời gian của mình</p>
+                                </li>
+                                <li>
+                                    <h3>Trở thành đối tác giao hàng</h3>
+                                    <p>Giao hàng và tăng cơ hội thu nhập</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="vendor" style="display: none;">
+                    <div class="select">
+                        <div>
+                            <h2>Phát triển doanh nghiệp của bạn</h2>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <h3>Bán hàng trên Grab</h3>
+                                    <p>Trở thành đối tác của Grab để tiếp cận được nhiều khách hàng hơn.</p>
+                                </li>
+                                <li>
+                                    <h3>Thanh toán không tiền mặt</h3>
+                                    <p>Giao dịch dễ dàng và an toàn với phương thức thanh toán không tiền mặt.</p>
+                                </li>
+                                <li>
+                                    <h3>Giao hàng với chúng tôi</h3>
+                                    <p>Giao mọi đơn đặt hàng đến khách hàng của bạn một cách thuận tiện.</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="myModalLogin">
+        <div class="modal-container">
+            <div class="modal-close" onclick="closeModalLogin()">
+                <i class="ti-close"></i>
+            </div>
+
+            <header class="modal-header">
+                <h1>Đăng nhập</h1>
+            </header>
+
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="login">
+                    <label for="username" class="modal-label">Tên đăng nhập</label>
+                    <input type="text" id="username" name="username" class="modal-input">
+                    <label for="password" class="modal-label">Nhập mật khẩu</label>
+                    <input type="password" id="password" name="password" class="modal-input">
+                    <button type="submit" class="submit-btn">Xác nhận</button>
+                    <div id="login-message">
+                        {% if error_message %}
+                            <h2 class="error-message">{{ error_message }}</h2>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+
+            <footer class="modal-footer">
+                <p>Bạn chưa có tài khoản <a href="#" onclick="changeModalRegister(event)">Đăng ký</a></p>
+            </footer>
+        </div>
+    </div>
+
+
+    <div class="modal" id="myModalRegister">
+        <div class="modal-container">
+            <div class="modal-close" onclick="closeModalRegister()">
+                <i class="ti-close"></i>
+            </div>
+    
+            <header class="modal-header">
+                <h1>Đăng ký</h1>
+            </header>
+    
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="register">
+                    <label for="" class="modal-label">Tên đăng nhập</label>
+                    <input type="text" class="modal-input" name="username">
+                    <label for="" class="modal-label">Họ và tên</label>
+                    <input type="text" class="modal-input" name="fullname">
+                    <label for="" class="modal-label">Email</label>
+                    <input type="email" class="modal-input" name="email">
+                    <label for="" class="modal-label">Số điện thoại</label>
+                    <input type="text" class="modal-input" name="phonenumber">
+                    <label for="" class="modal-label">Nhập mật khẩu</label>
+                    <input type="password" class="modal-input" name="password">
+                    <label for="role" class="modal-label">Quyền</label>
+                    <select id="role" class="modal-input" name="role">
+                        <option value="user">Người dùng</option>
+                        <option value="driver">Tài xế</option>
+                        <option value="seller">Người bán</option>
+                    </select>
+                    <button class="submit-btn">Xác nhận</button>
+                    <div id="login-message">
+                        {% if error_message %}
+                            <h2 class="error-message">{{ error_message }}</h2>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+    
+            <footer class="modal-footer">
+                <p>Bạn đã có tài khoản <a href="" onclick="changeModalLogin(event)">Đăng nhập</a></p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        function selectMenuItem(element) {
+            var menuItems = document.querySelectorAll('#content .menu li');
+            menuItems.forEach(function(item) {
+                item.classList.remove('selected');
+            });
+            element.parentNode.classList.add('selected');
+            var menuItem = element.textContent.trim(); 
+            switch (menuItem) {
+                case 'Người tiêu dùng':
+                    showMenuUser();
+                    break;
+                case 'Đối tác tài xế':
+                    showMenuDriver();
+                    break;
+                case 'Đối tác thương nhân':
+                    showMenuVendor();
+                    break;
+                case 'Doanh nghiệp':
+                    showMenuBussiness();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function showMenuUser() {
+            document.getElementById("user").style.display = "block";
+            document.getElementById("driver").style.display = "none";
+            document.getElementById("vendor").style.display = "none";
+            document.getElementById("bussiness").style.display = "none";
+        }
+
+        function showMenuDriver() {
+            document.getElementById("user").style.display = "none";
+            document.getElementById("driver").style.display = "block";
+            document.getElementById("vendor").style.display = "none";
+            document.getElementById("bussiness").style.display = "none";
+        }
+
+        function showMenuVendor() {
+            document.getElementById("user").style.display = "none";
+            document.getElementById("driver").style.display = "none";
+            document.getElementById("vendor").style.display = "block";
+            document.getElementById("bussiness").style.display = "none";
+        }
+
+        function openModalLogin() {
+            document.getElementById("myModalLogin").style.display = "flex";
+        }
+
+        function closeModalLogin() {
+            document.getElementById("myModalLogin").style.display = "none";
+        }
+
+        function closeModalRegister() {
+            document.getElementById("myModalRegister").style.display = "none";
+        }
+
+        function changeModalRegister(event) {
+            event.preventDefault(); 
+            document.getElementById("myModalLogin").style.display = "none";
+            document.getElementById("myModalRegister").style.display = "flex";
+        }
+
+        function changeModalLogin(event) {
+            event.preventDefault(); 
+            document.getElementById("myModalRegister").style.display = "none";
+            document.getElementById("myModalLogin").style.display = "flex";
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var errorMessage = document.querySelector('.error-message');
+            if (errorMessage) {
+                document.getElementById('myModalLogin').style.display = 'flex';
+            }
+        });
+    </script>
+</body>
+</html>
